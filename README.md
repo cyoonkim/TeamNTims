@@ -24,19 +24,15 @@ College student team project chat program
 * 로그인 로그아웃 화면 추가
 
 ```html
-<!-- 유저 정보 & 로그인, 로그아웃 -->
-  <center>
-    <!-- 유저 정보 표시 -->
-    <div hidden id="user-pic"></div>
-    <div hidden id="user-name" class="mdl-color-text--orange-200"></div>
-
-    <!-- 계정 로그인 & 로그아웃 버튼 -->
-    <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">Sign-out
-    </button>
-    <button hidden id="sign-in" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
-      <i class="material-icons">account_circle</i>Sign-in with Google
-    </button>
-  </center>
+	<div id="user-container" style="text-align:center; padding:300px 0 0 0">
+            <div hidden id="user-pic"></div>
+            <div hidden id="user-name"></div>
+            <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">Sign-out
+            </button>
+            <button hidden id="sign-in" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
+              <i class="material-icons">account_circle</i>Sign-in with Google
+            </button>
+          </div>
 ```
 
 ##### login.js
@@ -68,13 +64,11 @@ College student team project chat program
 * 버튼을 누르면 first.html로 연결되도록 구현
 
 ```html
-  <!-- 입장 버튼 -->
-  <p align="center">
-    <button id="login" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color-text--orange-200"
-      onclick="location.href='/first.html'">
-      ENTER TO CHAT ROOM
-    </button>
-  </p>
+<button id="login"
+   class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color-text--orange-200" 
+   onclick="location.href='/first.html'">
+    enter to chat room
+  </button>
 ```
 
 ##### login.js
@@ -155,6 +149,7 @@ fileButtonElement를 클릭했을 때 현재 이벤트의 기본 동작을 중�
 ```
 
 * saveFileMessage함수. file을 입력받았을 시에 /messages 참조의해당 roomId참조 밑에 message format에 fileUrl과 filename을 더해 firebase database에 저장한다. fileUrl은 firebase storage에 업로드 한 후 snapshot을 통해 넘겨받는다. 
+<-이부분 설명 괜찮나유ㅠㅠ
 
 ```javascript
 	// Saves a new message containing an image in Firebase.
@@ -188,23 +183,24 @@ fileButtonElement를 클릭했을 때 현재 이벤트의 기본 동작을 중�
 
 #### 3.2 파일 다운로드
 
-displayMessage 메소드 안에서 filename 을 인자로 받았을 때, messageElement를 만든 후 그 안의 콘텐츠를 filename을 출력하고 fileUrl의 참조를 링크로 연결하여 다운로드 할 수 있게 구현하였다. 
+* displayMessage 메소드 안에서 filename 을 인자로 받았을 때, messageElement를 만든 후 그 안의 콘텐츠를 filename을 출력하고 fileUrl의 참조를 링크로 연결하여 다운로드 할 수 있게 구현하였다. 
 
 ```javascript
 	messageElement.innerHTML = '<a href="' +  fileUrl + '">'+filename+'</a>';
 ```
 
-### 4. 현재 접속자 확인 
+### 4. 현재 접속자 확인
 ***
-위젯을 추가하여 실시간 사용자 수를 확인할 수 있다.   
+
+* 위젯을 추가하여 실시간 사용자 수를 확인할 수 있다.   
  [WhosAmungUs](https://whos.amung.us/)
 
-#### first.html
-```html
- 	<strong style="font-size: 15px">현재 인원수</strong>
-            <script id="_waue06">
-              var _wau = _wau || []; _wau.push(["small", "sxz5miudyq", "e06"]);</script>
-            <script async src="//waust.at/s.js"></script>
+#### main.js
+```javascript
+	<br> current attendance
+            <center> <script id="_waue06">
+            var _wau = _wau || []; _wau.push(["small", "sxz5miudyq", "e06"]);</script>
+            <script async src="//waust.at/s.js"></script> </center>
 ```
 
 ### 5. 회의 알람 기능
@@ -212,7 +208,7 @@ displayMessage 메소드 안에서 filename 을 인자로 받았을 때, message
 
 ### 6. 일정 관리 기능
 ***
-일정을 함께 공유해야 하기 때문에 calendar에 일정을 표시함과 동시에 firebase database에 저장하여 공유할 수 있도록 구현하였다
+>일정을 함께 공유해야 하기 때문에 calendar에 일정을 표시함과 동시에 firebase database에 저장하여 공유할 수 있도록 구현하였다
 
 #### 6.1 fullcalendar 사용 준비
 ##### first.html
@@ -303,7 +299,7 @@ event의 설정 값을 변수로 묶고 'renderEvent'를 통해 calendar에 찍�
 	          title: title,
  	          allDay: true,
  	          start: moment(startdate),
-   	          end: moment(enddate).add('days',1),
+   	          end: moment(enddate),
   	          key: key
  	         };
  	         if(moment(startdate).isValid()){
@@ -318,140 +314,93 @@ event의 설정 값을 변수로 묶고 'renderEvent'를 통해 calendar에 찍�
 이벤트가 삭제됨을 알리는 경고창을 띄운 후 deleteEvent메소드를 호출하며 현재 event의 key에 저장된 값과 id값을 넘겨준다.
 
 ```javascript
-    eventClick: function (calEvent, jsEvent, view) {
-      var eventName = prompt("클릭하시면 해당 일정이 지워집니다." +
-        "\n정말 삭제하시려면 일정의 이름을 한번 더 입력하세요." +
-        "\n(참고: 제목이 없는 일정은 확인 또는 취소 버튼을 누르면 삭제됩니다.)");
-      if (eventName == calEvent.title) {
-        alert(calEvent.title + " 일정이 삭제되었습니다!");
-        deleteEvent(calEvent.key, calEvent._id);
-      }
-      return;
-    }
+eventClick: function(calEvent, jsEvent, view) {
+   		alert('Event: ' + calEvent.title + "is deleted!");
+	deleteEvent(calEvent.key, calEvent._id);
+}
 ```
 
 * deleteEvent 메소드에서는 firebase database의 calendar 참조 아래에 넘겨받은 event의 key 값과 같은 참조를 찾아 삭제한 후
 'removeEvents'를 통해 해당 event를 calendar에서 삭제한다.
 
 ```javascript
-	function deleteEvent(eventKey, eventId){
-	  console.log(eventKey);
-	  var database = firebase.database();
-	  var eventRef = firebase.database().ref('/calendar/').child(eventKey).remove();
-	  $('#calendar').fullCalendar('removeEvents',eventId);
-	}
-```
-
-#### 6.5 출석체크 기능
-
-calendar에 추가된 출석체크 기능을 사용하면 사용자의 유저ID와 기능을 사용한 현재시각을 calendar 일정에 추가한다.
-또한, 사용자에게는 출석체크가 성공적으로 이뤄졌다는 알림창을 표시한다.
-
-##### main.js
-
-```javascript
-    attendanceCheck: {
-      text: '출석체크',
-      id: 'check',
-      click: function(){
-        var calendarRef = firebase.database().ref('/calendar/');
-       var userName = firebase.auth().currentUser.displayName;
-        var date = $('#calendar').fullCalendar('getDate').format();
-        alert(userName+"님 출석체크 완료!\n"+"( "+date+" )");
-
-          return calendarRef.push({
-          title: userName+" 출석",
-          startdate: date,
-          enddate: date,
-        });
-      }
-    }
+function deleteEvent(eventKey, eventId){
+	 console.log(eventKey);
+	 var database = firebase.database();
+	 var eventRef = firebase.database().ref('/calendar/').child(eventKey).remove();
+	 $('#calendar').fullCalendar('removeEvents',eventId);
+}
 ```
 
 ### 7. user list 확인
 ***
-* 사용자가 로그인 했을 때 사용자의 정보를 firebase database에 저장한 후 모든 유저를 listing 한다.
-#### 7.1 유저 정보 저장
 
-* SignIn 함수 안에 위치한다. popup창이 뜨며 signin한 후 saveUserAtRealDB 함수를 호출한다.
-
-```javascript
-	firebase.auth().signInWithPopup(provider).then(function(){
- 	   saveUserAtRealDB(); 
- 	 });
-```
-
-* saveUserAtRealDB
-firebase database의 /user 참조 아래에 useruid 참조를 만든 후 아래에 해당 유저 정보를 저장한다.
-
-```javascript
-	function saveUserAtRealDB(){
- 	 var database = firebase.database(); //database reference
- 	 var useruid = firebase.auth().currentUser.uid; //get current user uid
- 	 var userRef = firebase.database().ref('/users/'+useruid); //database reference where save user data
- 	 return userRef.set({
- 	   useruid: useruid,
- 	   name: getUserName(),
- 	   email: getUserEmail(),
- 	   profilePicUrl: getProfilePicUrl()
- 	   }).catch(function(error) {
- 	   console.error('Error writing new user to Firebase Database', error);
- 	 });
-	}
-```
-
-#### 7.2 유저 정보 리스팅
-
-* loadUserList
-유저정보를 불러온다. firebase databse 의 /user참조 아래에 child가 더해지거나 변화가 생기면 callback 호출한다. callback 안에서는 datasnapshot을 찍어 displayUser을 호출하며 넘겨준다.
-
-```javascript
-	function loadUserList(){
- 	 var callback = function(snap){
- 	   var data = snap.val();
- 	   displayUser(snap.key, data.name + " 님");
-	  firebase.database().ref('/users/').on('child_added', callback);
-	  firebase.database().ref('/users/').on('child_changed', callback);
-	}
-```
-
-* displayUser
-html에 유저정보를 찍어주는 element를 만들어 유저 리스팅
-
-```javascript
-	function displayUser(key, name, picUrl, email){
- 	 var div = document.getElementById(key);
-	  // If an element for that user does not exists yet we create it.
-	  if (!div) {
-	    var container = document.createElement('div');
-	    container.innerHTML = USERLIST_TEMPLATE;
-	    div = container.firstChild;
-	    div.setAttribute('id', key);
-	    userListElement.appendChild(div);
-	  }
-	  if (picUrl) {
-	    div.querySelector('.pic').style.backgroundImage = 'url(' + picUrl + ')';
-	  }
-	  div.querySelector('.username').textContent = name;
-	  // div.querySelector('.email').textContent = email;
-	}
-```
-
-### 8. 기능과 관계 없는 UI 수정
+### 8. 당일 회의 알람 설정
 ***
-#### 8.1 index.html
+
+##### first.html
+
+* UI 추가 html 코드
+
+```html
+<div id="extra_container" class="mdl-cell mdl-cell--5-col">
+                today's meeting time alarm
+                <form name=exf1>
+                    <B>현재시간 :</B>
+                    <input type=text name=ch size=2>시 <input type=text name=cm size=2>분 <input type=text name=cs size=2>초<br />
+                    <B>회의시간 :</B>
+                    <input type=text name=h size=2>시 <input type=text name=m size=2>분 <input type=text name=s size=2>초<br />
+                    <input type=button name=b onclick=setAlarm() value="Set Alarm">     <input type=button name=r onclick=clearAlarm() value="Turn Alarm Off"><BR>
+                </form>
+```
+
+* 알람 울리기 기능 추가
+
+```html
+<script>
+                        var alarmTimer = null;
+                        var alarmSet;
+                        function setAlarm()   { alarmSet = true;  }
+                        function clearAlarm() { alarmSet = false; }
+                        function initAlarm() {
+                            if (alarmTimer!=null)clearInterval(alarmTimer);
+                            var nowTime = new Date();
+                            clearAlarm();
+                            document.exf1.h.value = nowTime.getHours();
+                            document.exf1.m.value = nowTime.getMinutes();
+                            document.exf1.s.value = nowTime.getSeconds();
+                            alarmTimer=setInterval("countTime()",1000);
+                        }
+                        function matchH() { return (document.exf1.ch.value == document.exf1.h.value); }
+                        function matchM() { return (document.exf1.cm.value == document.exf1.m.value); }
+                        function matchS() { return (document.exf1.cs.value == document.exf1.s.value); }
+                        function countTime() {
+                            var nowTime = new Date();
+                            document.exf1.ch.value = nowTime.getHours();
+                            document.exf1.cm.value = nowTime.getMinutes();
+                            document.exf1.cs.value = nowTime.getSeconds();
+                            if (matchH() && matchM() && matchS()) {
+                                alert("회의 참석 시간입니다.");
+                            }
+                        }
+                        onload=initAlarm;
+                    </script>
+```
+
+### 9. 기능과 관계 없는 UI 수정
+***
+##### index.html
 
 * 어플리케이션의 로고를 입력하는 코드
  
 ```html
-	<div style="text-align:center; padding:200px 0 0 0"><img src="images/tNtLogo.png"/></div>
+<div style="text-align:center; padding:200px 0 0 0"><img src="images/tNtLogo.png"/></div>
 ```
 
-#### 8.2 first.html
 
 사용 오픈 소스 및 위젯
 ==============
-- firebase
+- firebase friendly-chat https://github.com/firebase/friendlychat-web
 - fullcalendar https://fullcalendar.io/ 
 - WhosAmungUs https://whos.amung.us/
 
@@ -463,13 +412,15 @@ html에 유저정보를 찍어주는 element를 만들어 유저 리스팅
 > TeamNTims는 웹 어플리케이션으로 별도의 설치 필요 없이 주소로 접속하시면 됩니다.   
 > [TeamNTims](https://friendlychat-39754.firebaseapp.com/)   
 > https://friendlychat-39754.firebaseapp.com/   
-> *****여기 이미지 추가 해야할 것 같아요!
+
+
 
 라이센스 정보
 ===============
 
 See [LICENSE](https://github.com/yunyeoung/TeamNTims/blob/right/LICENSE) , Apache License 2.0
- 
+
+개발자 정보
 =============
 
 - 1415020 김채윤 cyoonkim  
@@ -513,9 +464,6 @@ See [LICENSE](https://github.com/yunyeoung/TeamNTims/blob/right/LICENSE) , Apach
     * 개발   
     first.html index.html에 팀 로고 추가   
     index.html main.js 수정하여 동접자 위젯 추가
-    fullCalendar을 이용해 출석체크 기능 구현
-    전체적인 UI 담당
-    일정 삭제 기능 수정
 
     * 최종발표   
     데모 영상 촬영
